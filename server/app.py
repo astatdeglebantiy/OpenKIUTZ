@@ -1,6 +1,7 @@
 import time
 import threading
-from http.server import ThreadingHTTPServer
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from typing import cast, Callable
 
 import config
 from server.handler import SiteRequestHandler, broadcast_live_update
@@ -36,7 +37,8 @@ def run():
     watcher_thread = threading.Thread(target=start_file_watcher, daemon=True)
     watcher_thread.start()
 
-    server = ThreadingHTTPServer((config.SERVER_HOST, config.SERVER_PORT), SiteRequestHandler)
+    handler = cast(Callable[..., BaseHTTPRequestHandler], SiteRequestHandler)
+    server = ThreadingHTTPServer((config.SERVER_HOST, config.SERVER_PORT), handler)
     server.daemon_threads = True
     print(f"Server running at http://{config.SERVER_HOST}:{config.SERVER_PORT}")
     try:

@@ -25,7 +25,7 @@ def macro_list(prefix: str) -> str:
     prefix = prefix.strip().strip("'\"")
     items = []
 
-    for f in sorted(config.POSTS_DIR.glob(f"{prefix}*.md")):
+    for f in sorted(config.POSTS_DIR.glob(f"{prefix}*.md"), key=str):
         slug = f.relative_to(config.POSTS_DIR).with_suffix("").as_posix()
         name = f.stem
         items.append(f'<li><a href="/p/{slug}">{name}</a></li>')

@@ -53,17 +53,14 @@ class MarkdownParser:
         return re.sub(r'@([a-zA-Z_]\w*)\((.*?)\)', replace_fn, text)
 
     @classmethod
-    def to_html(cls, md_text: str, current_dir: Path = None) -> str:
+    def to_html(cls, md_text: str, current_dir: Path | None = None) -> str:
         if current_dir is None:
             current_dir = config.POSTS_DIR
 
-        # 1. Вставка вложенных файлов @include(...)
         text = cls.resolve_includes(md_text, current_dir)
 
-        # 2. Выполнение серверных Python-функций @macro(...)
         text = cls.resolve_macros(text)
 
-        # 3. Изоляция блоков кода ```
         code_blocks = []
 
         def stash_code_block(m):
@@ -75,7 +72,6 @@ class MarkdownParser:
 
         text = re.sub(r'```(\w+)?\n([\s\S]*?)```', stash_code_block, text)
 
-        # 4. Изоляция <script> и <style>
         raw_tags = []
 
         def stash_raw_tag(m):
@@ -84,7 +80,6 @@ class MarkdownParser:
 
         text = re.sub(r'<(script|style)\b[^>]*>[\s\S]*?<\/\1>', stash_raw_tag, text, flags=re.IGNORECASE)
 
-        # 5. Построчный парсер Markdown
         lines = text.splitlines()
         processed = []
 
@@ -180,7 +175,6 @@ class MarkdownParser:
         processed.extend(close_open_containers())
         html = "\n".join(processed)
 
-        # 6. Инлайн элементы
         html = re.sub(r'~~(.*?)~~', r'<del>\1</del>', html)
         html = re.sub(r'`([^`]+)`', r'<code>\1</code>', html)
         html = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', html)

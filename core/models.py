@@ -14,7 +14,7 @@ class Subject:
 @dataclass
 class AcademicContext:
     reference_date: str  # "YYYY-MM-DD"
-    reference_week: int  # 1 or 2
+    reference_week: int
 
 @dataclass
 class SaturdayRef:
@@ -24,7 +24,7 @@ class SaturdayRef:
 @dataclass
 class ScheduleConfig:
     subjects: Dict[str, Subject]
-    schedule: List[Dict[int, List[Optional[Subject]]]]  # [Неделя 1, Неделя 2]
+    schedule: List[Dict[int, List[Optional[Subject]]]]
     time_slots: List[str]
     academic_context: AcademicContext
     saturday_schedule: Dict[str, SaturdayRef] = field(default_factory=dict)

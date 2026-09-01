@@ -40,7 +40,6 @@ body {
     padding: 32px 20px 64px 20px;
 }
 
-/* Header & Navigation */
 .site-header {
     display: flex;
     justify-content: space-between;
@@ -86,7 +85,6 @@ body {
     border-color: var(--accent);
 }
 
-/* Typography */
 .site-main h1, .site-main h2, .site-main h3, .site-main h4 {
     color: var(--text-primary);
     font-weight: 700;
@@ -130,14 +128,12 @@ body {
     text-decoration: underline;
 }
 
-/* Horizontal Rule */
 hr {
     border: none;
     border-top: 1px solid var(--border-color);
     margin: 32px 0;
 }
 
-/* Lists */
 .site-main ul, .site-main ol {
     padding-left: 24px;
     margin-bottom: 1.2rem;
@@ -148,7 +144,6 @@ hr {
     margin-bottom: 6px;
 }
 
-/* Blockquotes */
 .site-main blockquote {
     border-left: 4px solid var(--accent);
     background: var(--bg-surface);
@@ -162,7 +157,6 @@ hr {
     margin: 0;
 }
 
-/* Code Blocks */
 .site-main pre {
     background-color: var(--code-bg);
     color: var(--code-text);
@@ -187,7 +181,6 @@ hr {
     font-weight: 500;
 }
 
-/* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -211,7 +204,6 @@ tr:nth-child(even) {
     background-color: #fafbfc;
 }
 
-/* Task Lists */
 .task-list {
     list-style: none;
     padding-left: 0;
@@ -230,7 +222,6 @@ tr:nth-child(even) {
     height: 16px;
 }
 
-/* Search input & Elements */
 #searchInput {
     background: #ffffff !important;
     border: 1px solid var(--border-color) !important;
@@ -254,7 +245,6 @@ tr:nth-child(even) {
     color: var(--accent);
 }
 
-/* Resources & Media */
 .site-main img {
     max-width: 100%;
     height: auto;
@@ -262,7 +252,6 @@ tr:nth-child(even) {
     border: 1px solid var(--border-color);
 }
 
-/* Header Search Bar & Dropdown */
 .header-search-container {
     position: relative;
     flex: 1;
@@ -341,7 +330,6 @@ tr:nth-child(even) {
     text-align: center;
 }
 
-/* Badges and counters*/
 .badge {
     display: inline-block;
     font-size: 0.75rem;
@@ -355,7 +343,6 @@ tr:nth-child(even) {
     vertical-align: middle;
 }
 
-/* Callout / Support Banner */
 .callout {
     background-color: var(--accent-light);
     border: 1px solid #bfdbfe;

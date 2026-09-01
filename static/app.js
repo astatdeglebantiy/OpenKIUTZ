@@ -1,4 +1,4 @@
-// 1. Fast search
+// Fast search
 (function () {
     const input = document.getElementById("globalSearchInput");
     const dropdown = document.getElementById("searchDropdown");
@@ -44,7 +44,7 @@
     });
 })();
 
-// 2. Live Reload (SSE)
+// Live Reload (SSE)
 (function () {
     const currentSlug = document.body.dataset.slug;
     const nonSyncPages = ["map", "search", "diff"];

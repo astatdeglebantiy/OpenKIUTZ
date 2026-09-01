@@ -3,12 +3,12 @@ import mimetypes
 import threading
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
+from typing import LiteralString
 from urllib.parse import urlparse
 
 import config
-from core.git_sync import GitService
 from core.parser import MarkdownParser
-from core.template import render_layout, render_search_view, render_diff_view, render_map_view
+from core.template import render_layout, render_map_view
 
 SSE_CLIENTS = []
 SSE_LOCK = threading.Lock()
@@ -76,7 +76,7 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         # JSON API
         if path == "api/posts":
             posts_data = []
-            for f in sorted(config.POSTS_DIR.rglob("*.md")):
+            for f in sorted(config.POSTS_DIR.rglob("*.md"), key=str):
                 slug = f.relative_to(config.POSTS_DIR).with_suffix("").as_posix()
                 try:
                     raw = f.read_text(encoding="utf-8")
@@ -90,30 +90,6 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
             self._send_json({"posts": posts_data})
-            return
-
-        if path.startswith("api/posts/"):
-            slug = path.replace("api/posts/", "", 1).rstrip("/")
-            file_path = (config.POSTS_DIR / f"{slug}.md").resolve()
-
-            if not file_path.exists():
-                file_path = (config.POSTS_DIR / slug / "index.md").resolve()
-
-            if not self._is_safe_path(config.POSTS_DIR, file_path):
-                self._send_json({"error": "Post not found"}, 404)
-                return
-
-            raw = file_path.read_text(encoding="utf-8")
-            meta, content = MarkdownParser.parse_frontmatter(raw)
-            html_content = MarkdownParser.to_html(content, current_dir=file_path.parent)
-
-            self._send_json({
-                "slug": slug,
-                "title": meta.get("title", slug),
-                "meta": meta,
-                "markdown": content,
-                "html": html_content
-            })
             return
 
         # Static
@@ -136,15 +112,9 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
 
         # Raw MD
         if path.startswith("raw/"):
-            slug = path.split("raw/", 1)[1].rstrip("/")
-            if slug.endswith(".md"):
-                slug = slug[:-3]
-
-            file_path = (config.POSTS_DIR / f"{slug}.md").resolve()
-            if not file_path.exists():
-                file_path = (config.POSTS_DIR / slug / "index.md").resolve()
-
-            if not self._is_safe_path(config.POSTS_DIR, file_path):
+            slug = path.split("raw/", 1)[1]
+            file_path = self._resolve_post_file(slug)
+            if not file_path:
                 self.send_error(404, f"File '{slug}' not found")
                 return
 
@@ -165,56 +135,16 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
 
         # Map
         if path in ("map", "sitemap"):
-            posts = [f.relative_to(config.POSTS_DIR).with_suffix("").as_posix() for f in sorted(config.POSTS_DIR.rglob("*.md"))]
+            posts = [f.relative_to(config.POSTS_DIR).with_suffix("").as_posix() for f in sorted(config.POSTS_DIR.rglob("*.md"), key=str)]
             links = "".join([f'<li><a href="/p/{p}">{p}</a></li>' for p in posts])
             self._send_html(render_map_view(links))
             return
 
-        # Search
-        if path in ("search", "p/search"):
-            posts_html = []
-            for f in sorted(config.POSTS_DIR.rglob("*.md")):
-                rel_slug = f.relative_to(config.POSTS_DIR).with_suffix("").as_posix()
-                try:
-                    raw = f.read_text(encoding="utf-8")
-                    meta, _ = MarkdownParser.parse_frontmatter(raw)
-                    title = meta.get("title", rel_slug)
-                    posts_html.append(f'<li class="search-item" style="margin: 8px 0;"><a href="/p/{rel_slug}"><b>{title}</b></a> <code style="margin-left: 8px;">{rel_slug}</code></li>')
-                except Exception:
-                    pass
-
-            self._send_html(render_search_view("".join(posts_html)))
-            return
-
-        # Git Diff
-        if path in ("diff", "git"):
-            status_raw = GitService.status()
-            diff_raw = GitService.diff()
-
-            escaped_diff = diff_raw.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            highlighted_lines = []
-            for line in escaped_diff.splitlines():
-                if line.startswith("+") and not line.startswith("+++"):
-                    highlighted_lines.append(f'<span style="color: #7ee787;">{line}</span>')
-                elif line.startswith("-") and not line.startswith("---"):
-                    highlighted_lines.append(f'<span style="color: #ffa198;">{line}</span>')
-                elif line.startswith("@@"):
-                    highlighted_lines.append(f'<span style="color: #79c0ff;">{line}</span>')
-                else:
-                    highlighted_lines.append(line)
-
-            self._send_html(render_diff_view(status_raw, "\n".join(highlighted_lines)))
-            return
-
         # Pages
         if path.startswith("p/"):
-            slug = path.split("p/", 1)[1].rstrip("/")
-            file_path = (config.POSTS_DIR / f"{slug}.md").resolve()
-
-            if not file_path.exists():
-                file_path = (config.POSTS_DIR / slug / "index.md").resolve()
-
-            if not self._is_safe_path(config.POSTS_DIR, file_path):
+            slug: LiteralString = path.split("p/", 1)[1]
+            file_path = self._resolve_post_file(slug)
+            if not file_path:
                 self.send_error(404, f"Page '{slug}' not found")
                 return
 
@@ -240,11 +170,12 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _is_safe_path(self, base_dir: Path, target_path: Path) -> bool:
+    @staticmethod
+    def _is_safe_path(base_dir: Path, target_path: Path) -> bool:
         return str(target_path).startswith(str(base_dir.resolve())) and target_path.exists() and target_path.is_file()
 
     def _send_html(self, html: str, code: int = 200):
-        data = html.encode("utf-8")
+        data: bytes = html.encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
@@ -258,3 +189,17 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def _resolve_post_file(self, slug: str) -> Path | None:
+        slug = slug.strip("/")
+        if slug.endswith(".md"):
+            slug = slug[:-3]
+
+        file_path = (config.POSTS_DIR / f"{slug}.md").resolve()
+        if not file_path.exists():
+            file_path = (config.POSTS_DIR / slug / "index.md").resolve()
+
+        if not self._is_safe_path(config.POSTS_DIR, file_path):
+            return None
+
+        return file_path

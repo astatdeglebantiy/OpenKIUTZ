@@ -84,12 +84,8 @@ class ScheduleService:
                     time_str = time_slots[idx - 1] if idx - 1 < len(time_slots) else ""
 
                     if sub_id and sub_id in subjects:
-                        sub = subjects[sub_id]
-                        name = sub.get("name", sub_id)
-                        teacher = sub.get("lecturers_name", "—") or "—"
-                        aud = f"`{sub['room']}`" if sub.get("room") else "—"
-                        link = f"[Приєднатися]({sub['link']})" if sub.get("link") else "—"
-                        output.append(f"| {idx} | {time_str} | **{name}** | {teacher} | {aud} | {link} |")
+                        row_str = cls.format_subject_row(idx, time_str, subjects[sub_id], sub_id)
+                        output.append(row_str)
                     else:
                         output.append(f"| {idx} | {time_str} | — | — | — | — |")
 
@@ -133,14 +129,19 @@ class ScheduleService:
         for idx, sub_id in enumerate(day_lessons, start=1):
             time_str = time_slots[idx - 1] if idx - 1 < len(time_slots) else ""
             if sub_id and sub_id in subjects:
-                sub = subjects[sub_id]
-                name = sub.get("name", sub_id)
-                teacher = sub.get("lecturers_name", "—") or "—"
-                aud = f"`{sub['room']}`" if sub.get("room") else "—"
-                link = f"[Приєднатися]({sub['link']})" if sub.get("link") else "—"
-                output.append(f"| {idx} | {time_str} | **{name}** | {teacher} | {aud} | {link} |")
+                row_str = cls.format_subject_row(idx, time_str, subjects[sub_id], sub_id)
+                output.append(row_str)
 
         return "\n".join(output)
+
+    @staticmethod
+    def format_subject_row(idx, time_str, sub: dict, default_name: str) -> str:
+        name = sub.get("name", default_name)
+        teacher = sub.get("lecturers_name", "—") or "—"
+        aud = f"`{sub['room']}`" if sub.get("room") else "—"
+        link = f"[Приєднатися]({sub['link']})" if sub.get("link") else "—"
+
+        return f"| {idx} | {time_str} | **{name}** | {teacher} | {aud} | {link} |"
 
     @classmethod
     def render_full_template(cls, group_name: str) -> str:
