@@ -1,27 +1,10 @@
 ---
-title: Welcome
+title: Ласкаво просимо
 ---
 
-# Home Page
+# Головна сторінка
 
-Welcome to your standalone Markdown website engine.
+Ласкаво просимо на відкритий студентський цифровий хаб та базу знань Фахового коледжу інформаційних технологій та землевпорядкування Національного авіаційного університету.
 
-## Navigation
-* [Examples Page](examples)
-* [Subpage Directly](examples/example1)
-* [Interactive Search](search)
-* [Raw Sample Resource](/resources/sample.txt)
-
-<div class="info-card">
-  This is a raw HTML element with custom styles.
-</div>
-
-<style>
-  .info-card {
-    background: #1f2937;
-    border: 1px solid #374151;
-    padding: 15px;
-    border-radius: 6px;
-    margin: 20px 0;
-  }
-</style>
+## Навігація
+* [Групи](groups) @badge(groups/)

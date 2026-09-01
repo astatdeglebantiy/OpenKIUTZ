@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 import config
+from core.macros import MACROS
 
 
 class MarkdownParser:
@@ -36,12 +37,33 @@ class MarkdownParser:
         return re.sub(r'@include\((.*?)\)', replace_include, text)
 
     @classmethod
+    def resolve_macros(cls, text: str) -> str:
+        """Находит @function(args) и выполняет соответствующую Python-функцию."""
+
+        def replace_fn(match):
+            fn_name = match.group(1)
+            raw_arg = match.group(2)
+            if fn_name in MACROS:
+                try:
+                    return str(MACROS[fn_name](raw_arg))
+                except Exception as e:
+                    return f'<span style="color:red;">[Macro error ({fn_name}): {e}]</span>'
+            return match.group(0)
+
+        return re.sub(r'@([a-zA-Z_]\w*)\((.*?)\)', replace_fn, text)
+
+    @classmethod
     def to_html(cls, md_text: str, current_dir: Path = None) -> str:
         if current_dir is None:
             current_dir = config.POSTS_DIR
 
+        # 1. Вставка вложенных файлов @include(...)
         text = cls.resolve_includes(md_text, current_dir)
 
+        # 2. Выполнение серверных Python-функций @macro(...)
+        text = cls.resolve_macros(text)
+
+        # 3. Изоляция блоков кода ```
         code_blocks = []
 
         def stash_code_block(m):
@@ -53,6 +75,7 @@ class MarkdownParser:
 
         text = re.sub(r'```(\w+)?\n([\s\S]*?)```', stash_code_block, text)
 
+        # 4. Изоляция <script> и <style>
         raw_tags = []
 
         def stash_raw_tag(m):
@@ -61,6 +84,7 @@ class MarkdownParser:
 
         text = re.sub(r'<(script|style)\b[^>]*>[\s\S]*?<\/\1>', stash_raw_tag, text, flags=re.IGNORECASE)
 
+        # 5. Построчный парсер Markdown
         lines = text.splitlines()
         processed = []
 
@@ -73,27 +97,17 @@ class MarkdownParser:
         def close_open_containers():
             nonlocal in_ul, in_ol, in_quote, in_table, table_rows
             res = []
-            if in_ul:
-                res.append("</ul>")
-                in_ul = False
-            if in_ol:
-                res.append("</ol>")
-                in_ol = False
-            if in_quote:
-                res.append("</blockquote>")
-                in_quote = False
-            if in_table:
-                res.append(cls._render_table(table_rows))
-                table_rows = []
-                in_table = False
+            if in_ul: res.append("</ul>"); in_ul = False
+            if in_ol: res.append("</ol>"); in_ol = False
+            if in_quote: res.append("</blockquote>"); in_quote = False
+            if in_table: res.append(cls._render_table(table_rows)); table_rows = []; in_table = False
             return res
 
         for line in lines:
             stripped = line.strip()
 
             if stripped.startswith("|") and stripped.endswith("|"):
-                if in_ul or in_ol or in_quote:
-                    processed.extend(close_open_containers())
+                if in_ul or in_ol or in_quote: processed.extend(close_open_containers())
                 in_table = True
                 table_rows.append(stripped)
                 continue
@@ -113,8 +127,7 @@ class MarkdownParser:
                 continue
 
             if line.startswith("> "):
-                if in_ul or in_ol:
-                    processed.extend(close_open_containers())
+                if in_ul or in_ol: processed.extend(close_open_containers())
                 if not in_quote:
                     processed.append("<blockquote>")
                     in_quote = True
@@ -167,6 +180,7 @@ class MarkdownParser:
         processed.extend(close_open_containers())
         html = "\n".join(processed)
 
+        # 6. Инлайн элементы
         html = re.sub(r'~~(.*?)~~', r'<del>\1</del>', html)
         html = re.sub(r'`([^`]+)`', r'<code>\1</code>', html)
         html = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', html)

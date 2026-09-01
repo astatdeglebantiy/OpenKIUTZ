@@ -25,7 +25,7 @@ class GitService:
         return out if ok else f"Error: {out}"
 
     @classmethod
-    def diff(cls, rel_path: str = None) -> str:
+    def diff(cls, rel_path: str | None = None) -> str:
         has_head, _ = cls._exec(["rev-parse", "--verify", "HEAD"])
 
         if has_head:
