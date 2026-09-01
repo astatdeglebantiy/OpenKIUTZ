@@ -1,0 +1,87 @@
+{
+  "ref_date": "2026-09-01",
+  "time": [
+    "08:00 - 09:35",
+    "09:50 - 11:25",
+    "11:40 - 13:15",
+    "13:30 - 15:05",
+    "15:20 - 16:55"
+  ],
+  "subjects": {
+    "foreign_lang": {
+      "name": "Іноземна мова",
+      "lecturers_name": "Сливко В.О.",
+      "room": "",
+      "link": ""
+    },
+    "ukr_lit": {
+      "name": "Українська література",
+      "lecturers_name": "Шевченко В.О.",
+      "room": "",
+      "link": ""
+    },
+    "ukr_lang": {
+      "name": "Українська мова",
+      "lecturers_name": "Шевченко В.О.",
+      "room": "",
+      "link": ""
+    },
+    "history": {
+      "name": "Історія України і світ",
+      "lecturers_name": "Лінькова С.П.",
+      "room": "",
+      "link": ""
+    },
+    "pe": {
+      "name": "Фізична культура",
+      "lecturers_name": "Степаниченко О.О.",
+      "room": "",
+      "link": ""
+    },
+    "math": {
+      "name": "Математика",
+      "lecturers_name": "Шавурська Я.Я.",
+      "room": "",
+      "link": ""
+    },
+    "comp_arch": {
+      "name": "Архітектура комп'ютера",
+      "lecturers_name": "Левченко В.В.",
+      "room": "",
+      "link": ""
+    },
+    "tech": {
+      "name": "Технології",
+      "lecturers_name": "Іменинник І.В.",
+      "room": "",
+      "link": ""
+    },
+    "prog_basics": {
+      "name": "Основи програмування та алгоритмічні мови",
+      "lecturers_name": "Краліна Г.С.",
+      "room": "",
+      "link": ""
+    },
+    "microproc": {
+      "name": "Мікропроцесорна техніка",
+      "lecturers_name": "Шевчук Є.В.",
+      "room": "",
+      "link": ""
+    },
+    "law": {
+      "name": "Правознавство",
+      "lecturers_name": "Гаврутенко А.А.",
+      "room": "",
+      "link": ""
+    }
+  },
+  "schedule": [
+    {
+      "1": ["foreign_lang", "ukr_lit", "ukr_lang", "history", null],
+      "2": [null, null, "pe", "math", null],
+      "3": [null, null, null, null, null],
+      "4": ["comp_arch", "comp_arch", "tech", "prog_basics", null],
+      "5": ["microproc", "prog_basics", "math", "law", null]
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import config
 from datetime import datetime
 
+from core.schedule import ScheduleService
+
 
 def macro_count(prefix: str) -> str:
     prefix = prefix.strip().strip("'\"")
@@ -35,10 +37,22 @@ def macro_date(fmt: str = "%d.%m.%Y") -> str:
     fmt = fmt.strip().strip("'\"") or "%d.%m.%Y"
     return datetime.now().strftime(fmt)
 
+def macro_schedule(group_name: str) -> str:
+    return ScheduleService.render_full_schedule(group_name.strip().strip("'\""))
+
+def macro_schedule_today(group_name: str) -> str:
+    return ScheduleService.render_today(group_name.strip().strip("'\""))
+
+def macro_schedule_full(group_name: str) -> str:
+    return ScheduleService.render_full_schedule(group_name.strip().strip("'\""))
+
 
 MACROS = {
     "count": macro_count,
     "badge": macro_badge,
     "list": macro_list,
     "date": macro_date,
+    "schedule": macro_schedule,
+    "schedule_today": macro_schedule_today,
+    "schedule_full": macro_schedule_full,
 }
