@@ -16,6 +16,21 @@ def load_env(filepath: Path) -> None:
 
 load_env(BASE_DIR / ".env")
 
+def load_yaml(filepath: Path) -> dict:
+    data = {}
+    if not filepath.exists():
+        return data
+    with open(filepath, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or ":" not in line:
+                continue
+            key, val = line.split(":", 1)
+            data[key.strip()] = val.strip().strip("'\"")
+    return data
+
+YAML_CONFIG = load_yaml(BASE_DIR / "config.yaml")
+
 POSTS_DIR = BASE_DIR / "inwards"
 STATIC_DIR = BASE_DIR / "static"
 RESOURCES_DIR = BASE_DIR / "resources"
@@ -23,8 +38,9 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 
 SERVER_HOST = os.getenv("SERVER_HOST", "0.0.0.0")
 SERVER_PORT = int(os.getenv("SERVER_PORT", "3000"))
-SITE_TITLE = os.getenv("SITE_TITLE", "Markdown Site")
-DEFAULT_PAGE = os.getenv("DEFAULT_PAGE", "index")
+
+SITE_TITLE = YAML_CONFIG.get("site_title", "Markdown Site")
+DEFAULT_PAGE = YAML_CONFIG.get("default_page", "index")
 
 POSTS_DIR.mkdir(exist_ok=True)
 STATIC_DIR.mkdir(exist_ok=True)
