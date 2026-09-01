@@ -1,0 +1,2 @@
+Sample text resource file.
+Available at: /resources/sample.txt

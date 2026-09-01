@@ -1,0 +1,29 @@
+<h1>Search Pages</h1>
+<input type="text" id="searchInput" placeholder="Type to filter pages..." autofocus style="width: 100%; padding: 12px; background: #161b22; border: 1px solid #30363d; color: #fff; border-radius: 6px; box-sizing: border-box; margin-bottom: 20px;">
+<ul id="postsList" style="list-style: none; padding-left: 0;">
+    {{POSTS_LIST}}
+</ul>
+<p id="noResults" style="display: none; color: var(--text-secondary);">No matching pages found.</p>
+
+<script>
+    const input = document.getElementById('searchInput');
+    const items = document.querySelectorAll('.search-item');
+    const noResults = document.getElementById('noResults');
+
+    input.addEventListener('input', function(e) {
+        const q = e.target.value.toLowerCase().trim();
+        let count = 0;
+
+        items.forEach(function(item) {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(q)) {
+                item.style.display = '';
+                count++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        noResults.style.display = count === 0 ? 'block' : 'none';
+    });
+</script>

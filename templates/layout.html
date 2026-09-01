@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} - {{SITE_TITLE}}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-slug="{{SLUG}}">
+    <div class="layout-container">
+        <header class="site-header">
+            <a href="/" class="site-brand">{{SITE_TITLE}}</a>
+            <div class="header-actions">
+                <a href="/diff" class="header-link">Diff</a>
+                <a href="/map" class="header-link">Map</a>
+                <a href="/search" class="header-link">Search</a>
+                {{RAW_LINK}}
+            </div>
+        </header>
+        <main id="content-root" class="site-main">
+            {{CONTENT}}
+        </main>
+    </div>
+
+    <script>
+        const currentSlug = document.body.dataset.slug;
+        const nonSyncPages = ["map", "search", "diff"];
+
+        if (currentSlug !== undefined && !nonSyncPages.includes(currentSlug)) {
+            const evtSource = new EventSource("/api/live");
+            evtSource.onmessage = async function(event) {
+                const data = JSON.parse(event.data);
+                if (data.event === "update" && (data.slug === currentSlug || currentSlug === "")) {
+                    const endpoint = currentSlug ? `/api/posts/${currentSlug}` : null;
+                    if (endpoint) {
+                        const res = await fetch(endpoint);
+                        const post = await res.json();
+                        if (post.html) {
+                            document.getElementById("content-root").innerHTML = post.html;
+                            document.title = post.title + " - {{SITE_TITLE}}";
+                        }
+                    } else {
+                        location.reload();
+                    }
+                }
+            };
+        }
+    </script>
+</body>
+</html>

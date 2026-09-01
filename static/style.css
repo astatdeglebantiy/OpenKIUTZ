@@ -1,0 +1,148 @@
+:root {
+    --bg-primary: #0f1115;
+    --bg-surface: #181b20;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --accent: #58a6ff;
+    --code-bg: #161b22;
+    --border-color: #30363d;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.layout-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.site-brand {
+    color: var(--accent);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.header-link, .site-raw-btn {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    background: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.header-link:hover, .site-raw-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+.site-main h1, .site-main h2, .site-main h3 {
+    color: #ffffff;
+}
+
+.site-main a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.site-main a:hover {
+    text-decoration: underline;
+}
+
+.site-main pre {
+    background-color: var(--code-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+}
+
+.site-main code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 0.9em;
+}
+
+.site-main p code {
+    background-color: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.site-main blockquote {
+    border-left: 3px solid var(--accent);
+    margin-left: 0;
+    padding-left: 16px;
+    color: var(--text-secondary);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 30px 0;
+}
+
+del {
+    color: var(--text-secondary);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+th {
+    background-color: var(--code-bg);
+    color: #fff;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.task-list {
+    list-style: none;
+    padding-left: 5px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.task-item input[type="checkbox"] {
+    accent-color: var(--accent);
+}
