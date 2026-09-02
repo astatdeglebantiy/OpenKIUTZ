@@ -1,6 +1,8 @@
-FROM python:3.14-alpine
+FROM python:3.12-alpine
 
 WORKDIR /app
+
+RUN pip install --no-cache-dir pyyaml
 
 COPY core/ ./core/
 COPY server/ ./server/
