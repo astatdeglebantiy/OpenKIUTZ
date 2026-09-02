@@ -1,10 +1,39 @@
 import re
 from pathlib import Path
 import config
-from core.macros import MACROS
+from core.macros import MacroRegistry, default_macro_registry
+from core.rules import (
+    ParsingContext,
+    BaseBlockRule,
+    TableRule,
+    HorizontalRule,
+    HeadingRule,
+    BlockquoteRule,
+    TaskListRule,
+    UnorderedListRule,
+    OrderedListRule,
+    EmptyLineRule,
+    RawHtmlRule,
+    ParagraphRule,
+)
 
 
 class MarkdownParser:
+    def __init__(self, macro_registry: MacroRegistry | None = None):
+        self.macro_registry = macro_registry or default_macro_registry
+        self.rules: list[BaseBlockRule] = [
+            TableRule(),
+            HorizontalRule(),
+            HeadingRule(),
+            BlockquoteRule(),
+            TaskListRule(),
+            UnorderedListRule(),
+            OrderedListRule(),
+            EmptyLineRule(),
+            RawHtmlRule(),
+            ParagraphRule(),
+        ]
+
     @staticmethod
     def parse_frontmatter(raw_text: str) -> tuple[dict, str]:
         metadata = {}
@@ -21,8 +50,7 @@ class MarkdownParser:
 
         return metadata, content
 
-    @classmethod
-    def resolve_includes(cls, text: str, current_dir: Path) -> str:
+    def resolve_includes(self, text: str, current_dir: Path) -> str:
         def replace_include(match):
             rel_path = match.group(1).strip()
             target_file = (current_dir / rel_path).resolve()
@@ -31,158 +59,77 @@ class MarkdownParser:
                 return f'<div class="include-error">[Include error: {rel_path} not found]</div>'
 
             included_raw = target_file.read_text(encoding="utf-8")
-            _, included_content = cls.parse_frontmatter(included_raw)
-            return cls.resolve_includes(included_content, target_file.parent)
+            _, included_content = self.parse_frontmatter(included_raw)
+            return self.resolve_includes(included_content, target_file.parent)
 
         return re.sub(r'@include\((.*?)\)', replace_include, text)
 
-    @classmethod
-    def resolve_macros(cls, text: str) -> str:
-        """Находит @function(args) и выполняет соответствующую Python-функцию."""
-
+    def resolve_macros(self, text: str) -> str:
         def replace_fn(match):
             fn_name = match.group(1)
             raw_arg = match.group(2)
-            if fn_name in MACROS:
-                try:
-                    return str(MACROS[fn_name](raw_arg))
-                except Exception as e:
-                    return f'<span style="color:red;">[Macro error ({fn_name}): {e}]</span>'
-            return match.group(0)
+            return self.macro_registry.execute(fn_name, raw_arg)
 
         return re.sub(r'@([a-zA-Z_]\w*)\((.*?)\)', replace_fn, text)
 
-    @classmethod
-    def to_html(cls, md_text: str, current_dir: Path | None = None) -> str:
-        if current_dir is None:
-            current_dir = config.POSTS_DIR
-
-        text = cls.resolve_includes(md_text, current_dir)
-
-        text = cls.resolve_macros(text)
-
-        code_blocks = []
-
-        def stash_code_block(m):
+    @staticmethod
+    def _stash_code_blocks(text: str, stash: list[str]) -> str:
+        def stash_cb(m):
             lang = m.group(1) or ""
-            code = m.group(2)
-            escaped = code.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            code_blocks.append(f'<pre><code class="language-{lang}">{escaped}</code></pre>')
-            return f"<!--CODE_BLOCK_{len(code_blocks) - 1}-->"
+            code = m.group(2).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            stash.append(f'<pre><code class="language-{lang}">{code}</code></pre>')
+            return f"<!--CODE_BLOCK_{len(stash)-1}-->"
 
-        text = re.sub(r'```(\w+)?\n([\s\S]*?)```', stash_code_block, text)
+        return re.sub(r'```(\w+)?\n([\s\S]*?)```', stash_cb, text)
 
-        raw_tags = []
+    @staticmethod
+    def _stash_raw_tags(text: str, stash: list[str]) -> str:
+        def stash_tag(m):
+            stash.append(m.group(0))
+            return f"<!--RAW_TAG_{len(stash)-1}-->"
 
-        def stash_raw_tag(m):
-            raw_tags.append(m.group(0))
-            return f"<!--RAW_TAG_{len(raw_tags) - 1}-->"
+        return re.sub(r'<(script|style)\b[^>]*>[\s\S]*?<\/\1>', stash_tag, text, flags=re.IGNORECASE)
 
-        text = re.sub(r'<(script|style)\b[^>]*>[\s\S]*?<\/\1>', stash_raw_tag, text, flags=re.IGNORECASE)
-
-        lines = text.splitlines()
-        processed = []
-
-        in_ul = False
-        in_ol = False
-        in_quote = False
-        in_table = False
-        table_rows = []
-
-        def close_open_containers():
-            nonlocal in_ul, in_ol, in_quote, in_table, table_rows
-            res = []
-            if in_ul: res.append("</ul>"); in_ul = False
-            if in_ol: res.append("</ol>"); in_ol = False
-            if in_quote: res.append("</blockquote>"); in_quote = False
-            if in_table: res.append(cls._render_table(table_rows)); table_rows = []; in_table = False
-            return res
-
-        for line in lines:
-            stripped = line.strip()
-
-            if stripped.startswith("|") and stripped.endswith("|"):
-                if in_ul or in_ol or in_quote: processed.extend(close_open_containers())
-                in_table = True
-                table_rows.append(stripped)
-                continue
-            elif in_table:
-                processed.extend(close_open_containers())
-
-            if re.match(r'^(\-{3,}|\*{3,}|_{3,})$', stripped):
-                processed.extend(close_open_containers())
-                processed.append("<hr>")
-                continue
-
-            h_match = re.match(r'^(#{1,6})\s+(.*)$', line)
-            if h_match:
-                processed.extend(close_open_containers())
-                lvl = len(h_match.group(1))
-                processed.append(f"<h{lvl}>{h_match.group(2)}</h{lvl}>")
-                continue
-
-            if line.startswith("> "):
-                if in_ul or in_ol: processed.extend(close_open_containers())
-                if not in_quote:
-                    processed.append("<blockquote>")
-                    in_quote = True
-                processed.append(f"<p>{line[2:]}</p>")
-                continue
-            elif in_quote:
-                processed.append("</blockquote>")
-                in_quote = False
-
-            task_match = re.match(r'^[\*\-]\s+\[([ xX])\]\s+(.*)$', stripped)
-            if task_match:
-                if in_ol: processed.extend(close_open_containers())
-                if not in_ul:
-                    processed.append('<ul class="task-list">')
-                    in_ul = True
-                checked = 'checked disabled' if task_match.group(1).lower() == 'x' else 'disabled'
-                processed.append(f'<li class="task-item"><input type="checkbox" {checked}> {task_match.group(2)}</li>')
-                continue
-
-            ul_match = re.match(r'^[\*\-]\s+(.*)$', stripped)
-            if ul_match:
-                if in_ol: processed.extend(close_open_containers())
-                if not in_ul:
-                    processed.append("<ul>")
-                    in_ul = True
-                processed.append(f"<li>{ul_match.group(1)}</li>")
-                continue
-
-            ol_match = re.match(r'^\d+\.\s+(.*)$', stripped)
-            if ol_match:
-                if in_ul: processed.extend(close_open_containers())
-                if not in_ol:
-                    processed.append("<ol>")
-                    in_ol = True
-                processed.append(f"<li>{ol_match.group(1)}</li>")
-                continue
-
-            if in_ul or in_ol:
-                processed.extend(close_open_containers())
-
-            if not stripped:
-                processed.append("")
-                continue
-
-            if (stripped.startswith("<") and stripped.endswith(">")) or stripped.startswith("<!--"):
-                processed.append(line)
-            else:
-                processed.append(f"<p>{line}</p>")
-
-        processed.extend(close_open_containers())
-        html = "\n".join(processed)
+    @staticmethod
+    def _apply_inline_formatting(html: str) -> str:
+        html = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1">', html)
+        html = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', html)
 
         html = re.sub(r'~~(.*?)~~', r'<del>\1</del>', html)
         html = re.sub(r'`([^`]+)`', r'<code>\1</code>', html)
+
         html = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', html)
-        html = re.sub(r'__(.*?)__', r'<strong>\1</strong>', html)
+        html = re.sub(r'(?<!\w)__(.*?)__(?!\w)', r'<strong>\1</strong>', html)
+
         html = re.sub(r'\*(.*?)\*', r'<em>\1</em>', html)
-        html = re.sub(r'_(.*?)_', r'<em>\1</em>', html)
-        html = re.sub(r'!\[(.*?)\]\((.*?)\)', r'<img src="\2" alt="\1">', html)
-        html = re.sub(r'\[(.*?)\]\((.*?)\)', r'<a href="\2">\1</a>', html)
+        html = re.sub(r'(?<!\w)_([^_]+)_(?!\w)', r'<em>\1</em>', html)
+
+        return html
+
+    def to_html(self, md_text: str, current_dir: Path | None = None) -> str:
+        if current_dir is None:
+            current_dir = config.POSTS_DIR
+
+        text = self.resolve_includes(md_text, current_dir)
+        text = self.resolve_macros(text)
+
+        code_blocks: list[str] = []
+        text = self._stash_code_blocks(text, code_blocks)
+
+        raw_tags: list[str] = []
+        text = self._stash_raw_tags(text, raw_tags)
+
+        ctx = ParsingContext()
+        for line in text.splitlines():
+            stripped = line.strip()
+            for rule in self.rules:
+                if rule.matches(line, stripped, ctx):
+                    rule.process(line, stripped, ctx)
+                    break
+
+        ctx.close_containers()
+        html = "\n".join(ctx.processed)
+        html = self._apply_inline_formatting(html)
 
         for idx, block in enumerate(code_blocks):
             html = html.replace(f"<!--CODE_BLOCK_{idx}-->", block)
@@ -191,26 +138,3 @@ class MarkdownParser:
             html = html.replace(f"<!--RAW_TAG_{idx}-->", tag)
 
         return html
-
-    @classmethod
-    def _render_table(cls, rows: list[str]) -> str:
-        if len(rows) < 2:
-            return "\n".join(rows)
-
-        def split_row(r):
-            return [c.strip() for c in r.strip("|").split("|")]
-
-        header_cols = split_row(rows[0])
-        body_start = 2 if re.match(r'^[\s\|:\-]+$', rows[1]) else 1
-
-        th_html = "".join([f"<th>{col}</th>" for col in header_cols])
-        thead = f"<thead><tr>{th_html}</tr></thead>"
-
-        tbody_rows = []
-        for r in rows[body_start:]:
-            cols = split_row(r)
-            tds = "".join([f"<td>{c}</td>" for c in cols])
-            tbody_rows.append(f"<tr>{tds}</tr>")
-
-        tbody = f"<tbody>{''.join(tbody_rows)}</tbody>"
-        return f"<table>{thead}{tbody}</table>"

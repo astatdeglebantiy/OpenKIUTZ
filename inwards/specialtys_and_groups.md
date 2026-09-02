@@ -1,10 +1,10 @@
 ---
-title: Групи
+title: Спеціальності та Групи
 ---
 
-# Групи
+# Спеціальності та Групи
 
-Всі групи що має база знань
+Всі спеціальності та групи, що має база знань.
 
 <div class="callout">
   <div class="callout-title">Хочете додати або модерувати свою групу?</div>
@@ -12,8 +12,4 @@ title: Групи
   <a href="https://t.me/tAtdG" class="btn-tg" target="_blank">Зв'язатися в Telegram (@tAtdG)</a>
 </div>
 
-## [ІПЗ-215](groups/IPZ-215)
-Дескріпшін
-
-## [ІПЗ-217](groups/IPZ-217)
-Дескріпшін
+@groups_catalog()

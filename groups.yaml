@@ -1,0 +1,74 @@
+specialties:
+  - code: "F2"
+    old_code: "121"
+    name: "Інженерія програмного забезпечення"
+    short_name: "ІПЗ"
+    groups:
+      - name: "ІПЗ-215"
+        slug_name: "IPZ-215"
+        course: 2
+        curator: "Шевченко В.О."
+
+      - name: "ІПЗ-217"
+        slug_name: "IPZ-217"
+        course: 2
+        curator: "Ткачук Н.Г."
+        headman: "@Odun228"
+        deputy_headman: "@Ped11a"
+        delegate: "@tAtdG"
+
+  - code: "D2"
+    name: "Фінанси і кредит"
+    short_name: "ФК"
+
+  - code: "D7"
+    name: "Торгівля"
+    short_name: "Т"
+
+  - code: "G20"
+    name: "Видавництво та поліграфія"
+    short_name: "ВП"
+
+  - code: "D3"
+    name: "Менеджмент"
+    short_name: "ОВ(М)"
+
+  - code: "J8"
+    name: "Автомобільний транспорт"
+    short_name: "АТ"
+
+  - code: "B13"
+    name: "Діловодство"
+    short_name: "Д"
+
+  - code: "D5"
+    name: "Маркетинг"
+    short_name: "М"
+
+  - code: "F7"
+    name: "Комп'ютерна інженерія"
+    short_name: "КІ"
+
+  - code: "D7"
+    name: "Юридична офісна справа"
+    short_name: "ЮОС"
+
+  - code: "G18"
+    name: "Землевпорядкування"
+    short_name: "ГЗ"
+
+  - code: "C7"
+    name: "Журналістика"
+    short_name: "Ж"
+
+  - code: "J3"
+    name: "Туризм"
+    short_name: "ТР"
+
+  - code: "G5"
+    name: "Електронні комунікації та радіотехніка"
+    short_name: "ЕКР"
+
+  - code: "F5"
+    name: "Кібербезпека"
+    short_name: "КБ"

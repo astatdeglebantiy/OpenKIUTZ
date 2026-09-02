@@ -8,7 +8,9 @@ from urllib.parse import urlparse
 
 import config
 from core.parser import MarkdownParser
-from core.template import render_layout, render_map_view
+from core.template import default_template_engine
+
+markdown_parser = MarkdownParser()
 
 SSE_CLIENTS = []
 SSE_LOCK = threading.Lock()
@@ -137,7 +139,7 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         if path in ("map", "sitemap"):
             posts = [f.relative_to(config.POSTS_DIR).with_suffix("").as_posix() for f in sorted(config.POSTS_DIR.rglob("*.md"), key=str)]
             links = "".join([f'<li><a href="/p/{p}">{p}</a></li>' for p in posts])
-            self._send_html(render_map_view(links))
+            self._send_html(default_template_engine.render_map_view(links))
             return
 
         # Pages
@@ -149,11 +151,11 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
                 return
 
             raw = file_path.read_text(encoding="utf-8")
-            meta, content = MarkdownParser.parse_frontmatter(raw)
-            html_content = MarkdownParser.to_html(content, current_dir=file_path.parent)
+            meta, content = markdown_parser.parse_frontmatter(raw)
+            html_content = markdown_parser.to_html(content, current_dir=file_path.parent)
             title = meta.get("title", slug)
 
-            self._send_html(render_layout(title, html_content, slug=slug))
+            self._send_html(default_template_engine.render_layout(title, html_content, slug=slug))
             return
 
         self.send_error(404, "Not Found")
