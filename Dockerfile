@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.14-alpine
 
 WORKDIR /app
 
@@ -6,9 +6,11 @@ COPY core/ ./core/
 COPY server/ ./server/
 COPY templates/ ./templates/
 COPY static/ ./static/
-COPY config.py main.py ./
+COPY inwards/ ./inwards/
+COPY schedules/ ./schedules/
+COPY config.py config.yaml groups.yaml main.py ./
 
-RUN mkdir -p inwards resources
+RUN mkdir -p resources
 
 EXPOSE 3000
 
