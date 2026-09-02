@@ -15,7 +15,7 @@ specialties:
         curator: "Ткачук Н.Г."
         headman: "@Odun228"
         deputy_headman: "@Ped11a"
-        delegate: "@tAtdG"
+        moderators: ["@tAtdG"]
 
   - code: "D2"
     name: "Фінанси і кредит"

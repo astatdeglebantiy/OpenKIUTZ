@@ -13,12 +13,20 @@ class AcademicRepository:
         if not self.config_path.exists():
             return
 
-        import yaml
+        data = {}
         try:
+            import yaml
             with open(self.config_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
-        except ImportError:
-            data = config.YAML_CONFIG
+        except (ImportError, ModuleNotFoundError):
+            import json
+            try:
+                data = json.loads(self.config_path.read_text(encoding="utf-8"))
+            except Exception:
+                data = {}
+        except Exception as e:
+            print(f"[AcademicRepository] Error loading {self.config_path}: {e}")
+            data = {}
 
         self._specialties = []
         for spec_data in data.get("specialties", []):
@@ -31,9 +39,8 @@ class AcademicRepository:
                         course=int(grp_data.get("course", 1)),
                         curator=grp_data.get("curator"),
                         headman=grp_data.get("headman"),
-                        deputy_headman=grp_data.get("deputy_headman"),
-                        moderators=grp_data.get("delegate"),
-                        description=grp_data.get("description")
+                        moderators=grp_data.get("moderators"),
+                        description=grp_data.get("description"),
                     )
                 )
 
@@ -50,9 +57,9 @@ class AcademicRepository:
     def get_all_specialties(self) -> list[Specialty]:
         return self._specialties
 
-    def find_group(self, slug_name: str) -> Group | None:
+    def find_group(self, name: str) -> Group | None:
         for spec in self._specialties:
-            found = spec.find_group(slug_name)
+            found = spec.find_group(name)
             if found:
                 return found
         return None
