@@ -52,7 +52,7 @@ class ScheduleMarkdownRenderer:
         if lesson.is_empty:
             return f"| {lesson.number} | {lesson.time_slot} | — | — | — | — | — |"
         aud = f"`{lesson.room}`" if lesson.room else "—"
-        link = f"[Join]({lesson.link})" if lesson.link else "—"
+        link = f"[{'Join' if '?cjc=' in lesson.link else 'View'}]({lesson.link})" if lesson.link else "—"
         meet = f"[Join]({lesson.meet})" if lesson.meet else "—"
         return f"| {lesson.number} | {lesson.time_slot} | **{lesson.name}** | {lesson.lecturer} | {aud} | {link} | {meet} |"
 

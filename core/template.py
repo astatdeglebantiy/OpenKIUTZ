@@ -28,12 +28,14 @@ class TemplateEngine:
 
     def render_layout(self, title: str, content_html: str, slug: str = "") -> str:
         raw_link = f'<a href="/raw/{slug}" class="site-raw-btn" target="_blank">Raw</a>' if slug and slug not in ("map", "search", "diff") else ""
+        github_url = config.YAML_CONFIG.get("github_url", "https://github.com/astatdeglebantiy/OpenKIUTZ")
 
         context = {
             "{{TITLE}}": title,
             "{{SITE_TITLE}}": self.site_title,
             "{{SLUG}}": slug,
             "{{RAW_LINK}}": raw_link,
+            "{{GITHUB_URL}}": github_url,
             "{{CONTENT}}": content_html
         }
 
@@ -42,16 +44,6 @@ class TemplateEngine:
     def render_map_view(self, links_html: str) -> str:
         body = f"<h1>Site Map</h1><ul>{links_html or '<li>No posts available.</li>'}</ul>"
         return self.render_layout("Site Map", body, slug="map")
-
-    def render_diff_view(self, status_raw: str, diff_html: str) -> str:
-        template = self.get_template("diff.html")
-        body = template.replace("{{STATUS}}", status_raw or "Working tree clean.").replace("{{DIFF_HTML}}", diff_html)
-        return self.render_layout("Git Diff", body, slug="diff")
-
-    def render_search_view(self, posts_list_html: str) -> str:
-        template = self.get_template("search.html")
-        body = template.replace("{{POSTS_LIST}}", posts_list_html or "<li>No pages found.</li>")
-        return self.render_layout("Search", body, slug="search")
 
 
 default_template_engine = TemplateEngine()

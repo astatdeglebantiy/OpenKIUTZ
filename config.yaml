@@ -1,5 +1,3 @@
 site_title: "OpenKIUTZ"
 default_page: "index"
-
-schedules:
-  IPZ-217: "https://raw.githubusercontent.com/rtplugate-hub/SRooT/refs/heads/main/config.yaml"
+github_url: "https://github.com/astatdeglebantiy/OpenKIUTZ"

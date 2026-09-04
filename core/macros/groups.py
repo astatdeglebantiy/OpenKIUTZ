@@ -70,7 +70,7 @@ class GroupInfoMacro(BaseMacro):
             headman_link = f"[{group.headman}](https://t.me/{group.headman.lstrip('@')})" if group.headman.startswith("@") else group.headman
             output.append(f"* **Староста:** {headman_link}")
         if group.deputy_headman:
-            deputy_headman_link = f"[{group.deputy_headman}](https://t.me/{group.headman.lstrip('@')})" if group.headman.startswith("@") else group.deputy_headman
+            deputy_headman_link = f"[{group.deputy_headman}](https://t.me/{group.deputy_headman.lstrip('@')})" if group.deputy_headman.startswith("@") else group.deputy_headman
             output.append(f"* **Заступник старости:** {deputy_headman_link}")
         if group.moderators:
             mod_links = [

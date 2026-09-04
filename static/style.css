@@ -410,3 +410,25 @@ tr:nth-child(even) {
 .btn-tg:hover {
     background-color: var(--accent-hover);
 }
+
+.site-footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.site-footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.site-footer a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
