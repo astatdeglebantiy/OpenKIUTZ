@@ -12,19 +12,22 @@
       "name": "Іноземна мова",
       "lecturers_name": "Сливко В.О.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NDcyODk3Nzk0"
+      "link": "https://classroom.google.com/c/ODc2NDcyODk3Nzk0",
+      "meet": "https://meet.google.com/cod-ppfe-nvt"
     },
     "ukr_lit": {
       "name": "Українська література",
       "lecturers_name": "Шевченко В.О.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NDQ3MjY3Mzcz"
+      "link": "https://classroom.google.com/c/ODc2NDQ3MjY3Mzcz",
+      "meet": "https://meet.google.com/etk-gohy-gss"
     },
     "ukr_lang": {
       "name": "Українська мова",
       "lecturers_name": "Шевченко В.О.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NDQ1ODc3MzMz"
+      "link": "https://classroom.google.com/c/ODc2NDQ1ODc3MzMz",
+      "meet": "https://meet.google.com/had-sigv-omo"
     },
     "history": {
       "name": "Історія України і світ",
@@ -36,19 +39,22 @@
       "name": "Фізична культура",
       "lecturers_name": "Степаниченко О.О.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NTgzNjQ5MDcw"
+      "link": "https://classroom.google.com/c/ODc2NTgzNjQ5MDcw",
+      "meet": "https://meet.google.com/oec-ekrx-tjx"
     },
     "math": {
       "name": "Математика",
       "lecturers_name": "Шавурська Я.Я.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NTY0OTE1Mjc4"
+      "link": "https://classroom.google.com/c/ODc2NTY0OTE1Mjc4",
+      "meet": "https://meet.google.com/gvu-ghff-jyb"
     },
     "comp_arch": {
       "name": "Архітектура комп'ютера",
       "lecturers_name": "Левченко В.В.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc2NDc2NjIwMTE5"
+      "link": "https://classroom.google.com/c/ODc2NDc2NjIwMTE5",
+      "meet": "https://meet.google.com/xap-wwcc-quv"
     },
     "tech": {
       "name": "Технології",
@@ -66,7 +72,8 @@
       "name": "Мікропроцесорна техніка",
       "lecturers_name": "Шевчук Є.В.",
       "room": "",
-      "link": "https://classroom.google.com/c/ODc3NTY5MjI0NTYz"
+      "link": "https://classroom.google.com/c/ODc3NTY5MjI0NTYz",
+      "meet": "https://meet.google.com/djb-koay-sjb"
     },
     "law": {
       "name": "Правознавство",

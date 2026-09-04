@@ -1,6 +1,7 @@
 from core.macros.base import BaseMacro, MacroRegistry
 from core.macros.common import CountMacro, BadgeMacro, ListMacro, DateMacro
 from core.macros.groups import GroupsCatalogMacro, GroupInfoMacro
+from core.macros.news import NewsListMacro
 from core.macros.schedule import ScheduleMacro, ScheduleTodayMacro, ScheduleFullMacro
 
 
@@ -16,6 +17,7 @@ def create_default_registry() -> MacroRegistry:
 
     registry.register(GroupsCatalogMacro())
     registry.register(GroupInfoMacro())
+    registry.register(NewsListMacro())
 
     registry.register(ScheduleMacro())
     registry.register(ScheduleTodayMacro())

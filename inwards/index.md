@@ -8,6 +8,7 @@ title: Ласкаво просимо
 
 ## Навігація
 * [Спеціальності та Групи](specialtys_and_groups) @badge(specialtys_and_groups/)
+* [Підтримка](supporting)
 
 ## Новини
-_Незабаром..._
+@news_list()
