@@ -8,6 +8,11 @@ specialties:
         slug_name: "IPZ-215"
         course: 2
         curator: "Шевченко В.О."
+        headman: "@fof0009"
+        deputy_headman: "@q_aleksaa"
+        moderators:
+          - "@MrXwello"
+          - "@tAtdG"
 
       - name: "ІПЗ-217"
         slug_name: "IPZ-217"
@@ -15,7 +20,8 @@ specialties:
         curator: "Ткачук Н.Г."
         headman: "@Odun228"
         deputy_headman: "@Ped11a"
-        moderators: ["@tAtdG"]
+        moderators:
+          - "@tAtdG"
 
   - code: "D2"
     name: "Фінанси і кредит"

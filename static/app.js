@@ -1,4 +1,3 @@
-// Fast search
 (function () {
     const input = document.getElementById("globalSearchInput");
     const dropdown = document.getElementById("searchDropdown");
@@ -37,25 +36,14 @@
     input.addEventListener("focus", performSearch);
 
     document.addEventListener("click", (e) => {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) dropdown.style.display = "none";
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = "none";
+        }
     });
+
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") dropdown.style.display = "none";
+        if (e.key === "Escape") {
+            dropdown.style.display = "none";
+        }
     });
-})();
-
-// Live Reload (SSE)
-(function () {
-    const currentSlug = document.body.dataset.slug;
-    const nonSyncPages = ["map", "search", "diff"];
-
-    if (currentSlug !== undefined && !nonSyncPages.includes(currentSlug)) {
-        const evtSource = new EventSource("/api/live");
-        evtSource.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            if (data.event === "update" && (data.slug === currentSlug || currentSlug === "")) {
-                location.reload();
-            }
-        };
-    }
 })();

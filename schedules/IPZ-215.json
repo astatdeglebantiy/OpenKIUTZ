@@ -1,0 +1,112 @@
+{
+  "ref_date": "2026-09-01",
+  "time": [
+    "08:00 - 09:35",
+    "09:50 - 11:25",
+    "11:40 - 13:15",
+    "13:30 - 15:05",
+    "15:20 - 16:55"
+  ],
+  "subjects": {
+    "physics": {
+      "name": "Фізика та астрономія",
+      "lecturers_name": "Пономаренко А.О.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NTM3ODg4MDA2?cjc=tvqrw5b2",
+      "meet": "https://meet.google.com/qmc-ooey-vsd"
+    },
+    "history": {
+      "name": "Історія України і світ",
+      "lecturers_name": "Білановський О.М.",
+      "room": "",
+      "link": "https://classroom.google.com/c/Njc5MDIzNDM3NjRa",
+      "meet": "https://meet.google.com/zch-wvuc-ttc"
+    },
+    "math": {
+      "name": "Математика",
+      "lecturers_name": "Ковтун Н.В.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NDc2OTMyODk4?cjc=bvpkvyff",
+      "meet": "https://meet.google.com/hov-bfpx-ujr"
+    },
+    "pe": {
+      "name": "Фізична культура",
+      "lecturers_name": "Бистріцька І.М.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NjM5NzYzMjg3",
+      "meet": "https://meet.google.com/fjh-embt-afs"
+    },
+    "ukr_lit": {
+      "name": "Українська література",
+      "lecturers_name": "Шевченко В.О.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODAwNjAzMjcyMDgy",
+      "meet": "https://meet.google.com/sxu-otmd-nwt"
+    },
+    "ukr_lang": {
+      "name": "Українська мова",
+      "lecturers_name": "Козловець І.І.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NTY2MjI1MTAz",
+      "meet": "https://meet.google.com/umj-wtig-php"
+    },
+    "comp_arch": {
+      "name": "Архітектура комп'ютера",
+      "lecturers_name": "Левченко В.В.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NDcyNjQxNTM4",
+      "meet": "https://meet.google.com/ufo-awdj-amo"
+    },
+    "microproc": {
+      "name": "Мікропроцесорна техніка",
+      "lecturers_name": "Шевчук Є.В.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2OTM3MjU2NTkz",
+      "meet": "https://meet.google.com/scm-jwfh-eoc"
+    },
+    "prog_basics": {
+      "name": "Основи програмування та алгоритмічні мови",
+      "lecturers_name": "Краліна Г.С.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NTYwMDE1NDgz",
+      "meet": "https://meet.google.com/pyd-xnpx-ctm"
+    },
+    "tech": {
+      "name": "Технології",
+      "lecturers_name": "Іменинник І.В.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NzAyMTA0MTQ0?cjc=76nh4a6w",
+      "meet": "https://meet.google.com/jfe-besy-ivf"
+    },
+    "law": {
+      "name": "Правознавство",
+      "lecturers_name": "Гаврутенко А.А.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NDI2NDU3NjAz",
+      "meet": "https://meet.google.com/rsr-skfu-bdr"
+    },
+    "foreign_lang": {
+      "name": "Іноземна мова",
+      "lecturers_name": "Ткачук Н.Г.",
+      "room": "",
+      "link": "https://classroom.google.com/c/ODc2NDQwNzAzMjY4?cjc=5br4gbxd",
+      "meet": "https://meet.google.com/vvv-acdt-xny"
+    }
+  },
+  "schedule": [
+    {
+      "1": ["physics", "history", "math", "history", null],
+      "2": [null, "pe", "ukr_lit", "ukr_lang", null],
+      "3": ["comp_arch", "comp_arch", "microproc", "prog_basics", null],
+      "4": ["prog_basics", "tech", "law", null, null],
+      "5": [null, null, "foreign_lang", "physics", null]
+    },
+    {
+      "1": ["physics", "history", "math", "law", null],
+      "2": [null, "pe", "ukr_lit", "ukr_lang", null],
+      "3": ["comp_arch", "comp_arch", "microproc", "prog_basics", null],
+      "4": ["microproc", "tech", "math", null, null],
+      "5": [null, null, "foreign_lang", "physics", null]
+    }
+  ]
+}

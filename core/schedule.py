@@ -5,88 +5,7 @@ from typing import Optional
 from zoneinfo import ZoneInfo
 
 import config
-
-
-class LessonItem:
-    def __init__(self, number: int, time_slot: str, name: str, lecturer: str, room: str, link: str):
-        self.number: int = number
-        self.time_slot: str = time_slot
-        self.name: str = name
-        self.lecturer: str = lecturer
-        self.room: str = room
-        self.link: str = link
-
-    @property
-    def is_empty(self) -> bool:
-        return not self.name
-
-
-class GroupSchedule:
-    def __init__(
-        self,
-        group_name: str,
-        ref_date_str: str,
-        time_slots: list[str],
-        subjects_map: dict[str, dict],
-        weeks_data: list[dict[str, list[Optional[str]]]]
-    ):
-        self.group_name: str = group_name
-        self.ref_date_str: str = ref_date_str
-        self.time_slots: list[str] = time_slots
-        self.subjects_map: dict[str, dict] = subjects_map
-        self.weeks_data: list[dict[str, list[Optional[str]]]] = weeks_data
-
-    @property
-    def total_weeks(self) -> int:
-        return len(self.weeks_data)
-
-    def get_current_week_number(self, tz: ZoneInfo) -> int:
-        if self.total_weeks <= 1:
-            return 1
-        try:
-            ref_date = datetime.strptime(self.ref_date_str, "%Y-%m-%d")
-        except ValueError:
-            return 1
-
-        now = datetime.now(tz).replace(tzinfo=None)
-        delta_days = (now - ref_date).days
-        weeks_passed = delta_days // 7
-        return (weeks_passed % self.total_weeks) + 1
-
-    def get_day_lessons(self, week_index: int, day_number: int) -> list[LessonItem]:
-        if week_index < 0 or week_index >= self.total_weeks:
-            return []
-
-        day_str = str(day_number)
-        lessons_ids = self.weeks_data[week_index].get(day_str, [])
-        result = []
-
-        for idx, sub_id in enumerate(lessons_ids, start=1):
-            time_str = self.time_slots[idx - 1] if idx - 1 < len(self.time_slots) else ""
-            if sub_id and sub_id in self.subjects_map:
-                sub = self.subjects_map[sub_id]
-                result.append(
-                    LessonItem(
-                        number=idx,
-                        time_slot=time_str,
-                        name=sub.get("name", sub_id),
-                        lecturer=sub.get("lecturers_name", "—") or "—",
-                        room=sub.get("room", "") or "",
-                        link=sub.get("link", "") or ""
-                    )
-                )
-            else:
-                result.append(
-                    LessonItem(
-                        number=idx,
-                        time_slot=time_str,
-                        name="",
-                        lecturer="—",
-                        room="",
-                        link=""
-                    )
-                )
-        return result
+from core.models import GroupSchedule, LessonItem
 
 
 class ScheduleRepository:
@@ -131,10 +50,11 @@ class ScheduleMarkdownRenderer:
     @staticmethod
     def render_row(lesson: LessonItem) -> str:
         if lesson.is_empty:
-            return f"| {lesson.number} | {lesson.time_slot} | — | — | — | — |"
+            return f"| {lesson.number} | {lesson.time_slot} | — | — | — | — | — |"
         aud = f"`{lesson.room}`" if lesson.room else "—"
-        link = f"[Приєднатися]({lesson.link})" if lesson.link else "—"
-        return f"| {lesson.number} | {lesson.time_slot} | **{lesson.name}** | {lesson.lecturer} | {aud} | {link} |"
+        link = f"[Join]({lesson.link})" if lesson.link else "—"
+        meet = f"[Join]({lesson.meet})" if lesson.meet else "—"
+        return f"| {lesson.number} | {lesson.time_slot} | **{lesson.name}** | {lesson.lecturer} | {aud} | {link} | {meet} |"
 
     def render_full(self, schedule: GroupSchedule) -> str:
         if schedule.total_weeks == 0:
@@ -150,7 +70,7 @@ class ScheduleMarkdownRenderer:
             week_num = w_idx + 1
 
             if schedule.total_weeks > 1:
-                active_badge = " ⭐ (Поточний)" if week_num == current_week else ""
+                active_badge = " ⭐" if week_num == current_week else ""
                 output.append(f"## Тиждень {week_num}{active_badge}")
 
             for day_num in range(1, 7):
@@ -160,8 +80,8 @@ class ScheduleMarkdownRenderer:
 
                 day_header = "###" if schedule.total_weeks > 1 else "##"
                 output.append(f"{day_header} {self.day_names[day_num - 1]}")
-                output.append("| № | Час | Дисципліна | Викладач | Ауд. | Посилання |")
-                output.append("| :--- | :--- | :--- | :--- | :--- | :--- |")
+                output.append("| № | Час | Дисципліна | Викладач | Авд. | Classroom | Meet |")
+                output.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
 
                 for lesson in lessons:
                     output.append(self.render_row(lesson))
@@ -183,12 +103,12 @@ class ScheduleMarkdownRenderer:
         lessons = schedule.get_day_lessons(current_week - 1, day_idx)
 
         if not any(not l.is_empty for l in lessons):
-            return f"> **Сьогодні ({self.day_names[day_idx - 1]}) пар немає.**"
+            return f"> **Сьогодні — {self.day_names[day_idx - 1]} {now:%d.%m.%Y} — пар немає.**"
 
         output = [
-            f"### Розклад на сьогодні ({self.day_names[day_idx - 1]})",
-            "| № | Час | Дисципліна | Викладач | Ауд. | Посилання |",
-            "| :--- | :--- | :--- | :--- | :--- | :--- |"
+            f"### Розклад на сьогодні — {self.day_names[day_idx - 1]} {now:%d.%m.%Y}",
+            "| № | Час | Дисципліна | Викладач | Авд. | Classroom | Meet |",
+            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |"
         ]
 
         for lesson in lessons:

@@ -7,20 +7,25 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body data-slug="{{SLUG}}">
-    <div class="layout-container">
-        <header class="site-header">
-            <a href="/" class="site-brand">{{SITE_TITLE}}</a>
-            <div class="header-search-container">
-                <input type="text" id="globalSearchInput" placeholder="Пошук..." autocomplete="off">
-                <div id="searchDropdown" class="search-dropdown"></div>
-            </div>
-        </header>
+<div class="layout-container">
+    <header class="site-header">
+        <a href="/" class="site-brand">{{SITE_TITLE}}</a>
 
-        <main id="content-root" class="site-main">
-            {{CONTENT}}
-        </main>
-    </div>
+        <div class="header-search-container">
+            <input type="text"
+                   id="globalSearchInput"
+                   placeholder="Пошук..."
+                   aria-label="Пошук по сайту"
+                   autocomplete="off">
+            <div id="searchDropdown" class="search-dropdown"></div>
+        </div>
+    </header>
 
-    <script src="/static/app.js"></script>
+    <main id="content-root" class="site-main">
+        {{CONTENT}}
+    </main>
+</div>
+
+<script src="/static/app.js"></script>
 </body>
 </html>

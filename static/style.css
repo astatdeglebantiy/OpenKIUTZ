@@ -277,6 +277,31 @@ tr:nth-child(even) {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+.header-search-container {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+    margin: 0 16px;
+}
+
+#globalSearchInput {
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.15s ease;
+}
+
+#globalSearchInput:focus {
+    border-color: var(--accent);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 .search-dropdown {
     display: none;
     position: absolute;
@@ -289,6 +314,10 @@ tr:nth-child(even) {
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
     z-index: 50;
     overflow: hidden;
+}
+
+.header-search-container:focus-within .search-dropdown:not(:empty) {
+    display: block;
 }
 
 .dropdown-item {

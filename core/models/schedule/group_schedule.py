@@ -54,7 +54,8 @@ class GroupSchedule:
                         name=sub.get("name", sub_id),
                         lecturer=sub.get("lecturers_name", "—") or "—",
                         room=sub.get("room", "") or "",
-                        link=sub.get("link", "") or ""
+                        link=sub.get("link", "") or "",
+                        meet=sub.get("meet", "") or "",
                     )
                 )
             else:
@@ -65,7 +66,8 @@ class GroupSchedule:
                         name="",
                         lecturer="—",
                         room="",
-                        link=""
+                        link="",
+                        meet = "",
                     )
                 )
         return result

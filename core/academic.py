@@ -39,6 +39,7 @@ class AcademicRepository:
                         course=int(grp_data.get("course", 1)),
                         curator=grp_data.get("curator"),
                         headman=grp_data.get("headman"),
+                        deputy_headman=grp_data.get("deputy_headman"),
                         moderators=grp_data.get("moderators"),
                         description=grp_data.get("description"),
                     )
