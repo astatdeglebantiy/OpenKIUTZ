@@ -4,7 +4,7 @@ OpenKIUTZ — це відкрита студентська платформа, �
 
 Движок оптимізований для розгортання на Raspberry Pi 5 і працює без сторонніх залежностей на чистому Python.
 
-* **Офіційний сайт проєкту:** [https://kiutz.astatdeglebantiy.pp.ua](https://kiutz.astatdeglebantiy.pp.ua)
+* **Офіційний сайт проєкту:** [https://kiutz.pp.ua](https://kiutz.pp.ua) (old [https://kiutz.astatdeglebantiy.pp.ua](https://kiutz.astatdeglebantiy.pp.ua))
 * **Статус платформи:** Працює цілодобово на базі Raspberry Pi 5 через Cloudflare Tunnel
 
 ---
