@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from core.models.schedule.lesson import LessonItem
 
@@ -26,13 +26,16 @@ class GroupSchedule:
         if self.total_weeks <= 1:
             return 1
         try:
-            ref_date = datetime.strptime(self.ref_date_str, "%Y-%m-%d")
+            ref_date = datetime.strptime(self.ref_date_str, "%Y-%m-%d").date()
         except ValueError:
             return 1
 
-        now = datetime.now(tz).replace(tzinfo=None)
-        delta_days = (now - ref_date).days
-        weeks_passed = delta_days // 7
+        today = datetime.now(tz).date()
+
+        ref_monday = ref_date - timedelta(days=ref_date.weekday())
+        current_monday = today - timedelta(days=today.weekday())
+
+        weeks_passed = (current_monday - ref_monday).days // 7
         return (weeks_passed % self.total_weeks) + 1
 
     def get_day_lessons(self, week_index: int, day_number: int) -> list[LessonItem]:
