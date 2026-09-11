@@ -42,7 +42,7 @@ def get_inwards_routes(base_dir: Path | None = None) -> List[Dict[str, str]]:
     return routes
 
 
-def generate_sitemap_xml() -> str:
+def generate_sitemap_xml(base_url: str | None = None) -> str:
     routes = get_inwards_routes()
 
     xml_lines = [
@@ -61,7 +61,7 @@ def generate_sitemap_xml() -> str:
         })
 
     for item in routes:
-        full_url = f"{config.BASE_URL}{item['loc']}"
+        full_url = f"{base_url}{item['loc']}"
         xml_lines.append("  <url>")
         xml_lines.append(f"    <loc>{full_url}</loc>")
         xml_lines.append(f"    <lastmod>{item['lastmod']}</lastmod>")
