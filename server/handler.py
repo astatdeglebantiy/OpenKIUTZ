@@ -13,6 +13,9 @@ markdown_parser = MarkdownParser()
 
 
 class SiteRequestHandler(BaseHTTPRequestHandler):
+    def do_HEAD(self):
+        self.do_GET()
+
     @staticmethod
     def _is_safe_path(base_dir: Path, target_path: Path) -> bool:
         return str(target_path).startswith(str(base_dir.resolve())) and target_path.exists() and target_path.is_file()
@@ -41,7 +44,8 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", mime_type)
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
-        self.wfile.write(data)
+        if self.command != "HEAD":
+            self.wfile.write(data)
 
     def _send_html(self, html: str, code: int = 200):
         data = html.encode("utf-8")
@@ -49,7 +53,8 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
-        self.wfile.write(data)
+        if self.command != "HEAD":
+            self.wfile.write(data)
 
     def _send_json(self, data: dict, code: int = 200):
         body = json.dumps(data).encode("utf-8")
@@ -57,7 +62,8 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
 
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -70,15 +76,39 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
                 self.send_header("Content-Type", "image/x-icon")
                 self.send_header("Content-Length", str(favicon_path.stat().st_size))
                 self.end_headers()
-                self.wfile.write(favicon_path.read_bytes())
+                if self.command != "HEAD":
+                    self.wfile.write(favicon_path.read_bytes())
             else:
                 self.send_response(204)
                 self.end_headers()
             return
 
+        if path == "sitemap.xml":
+            sitemap_content = generate_sitemap_xml(base_url=config.BASE_URL)
+            data = sitemap_content.encode("utf-8")
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(data)
+            return
+
+        if path == "robots.txt":
+            content = f"User-agent: *\nAllow: /\nSitemap: {config.BASE_URL}/sitemap.xml\n"
+            data = content.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            if self.command != "HEAD":
+                self.wfile.write(data)
+            return
+
         if path == "api/posts":
             posts_data = []
-            md_files: list[Path] = sorted(config.POSTS_DIR.rglob("*.md"))
+            md_files: list[Path] = sorted(config.POSTS_DIR.rglob("*.md"), key=str)
 
             for f in md_files:
                 slug = f.relative_to(config.POSTS_DIR).with_suffix("").as_posix()
@@ -154,16 +184,8 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/plain; charset=utf-8")
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
-            self.wfile.write(data)
-            return
-
-        if self.path == "/sitemap.xml":
-            sitemap_content = generate_sitemap_xml(base_url=config.BASE_URL)
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/xml; charset=utf-8")
-            self.end_headers()
-            self.wfile.write(sitemap_content.encode("utf-8"))
+            if self.command != "HEAD":
+                self.wfile.write(data)
             return
 
         if path == "":
@@ -173,7 +195,7 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
             return
 
         if path in ("map", "sitemap"):
-            posts = [f.relative_to(config.POSTS_DIR).with_suffix("").as_posix() for f in sorted(config.POSTS_DIR.rglob("*.md"))]
+            posts = [f.relative_to(config.POSTS_DIR).with_suffix("").as_posix() for f in sorted(config.POSTS_DIR.rglob("*.md"), key=str)]
             links = "".join(f'<li><a href="/p/{p}">{p}</a></li>' for p in posts)
             self._send_html(default_template_engine.render_map_view(links))
             return
