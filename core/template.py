@@ -28,7 +28,7 @@ class TemplateEngine:
 
     def render_layout(self, title: str, content_html: str, slug: str = "") -> str:
         raw_link = f'<a href="/raw/{slug}" class="site-raw-btn" target="_blank">Raw</a>' if slug and slug not in ("map", "search", "diff") else ""
-        github_url = config.YAML_CONFIG.get("github_url", "https://github.com/astatdeglebantiy/OpenKIUTZ")
+        github_url = config.GITHUB_URL
 
         context = {
             "{{TITLE}}": title,

@@ -41,6 +41,8 @@ SERVER_PORT = int(os.getenv("SERVER_PORT", "3000"))
 
 SITE_TITLE = YAML_CONFIG.get("site_title", "Markdown Site")
 DEFAULT_PAGE = YAML_CONFIG.get("default_page", "index")
+GITHUB_URL = YAML_CONFIG.get("github_url", "https://github.com/astatdeglebantiy/OpenKIUTZ")
+BASE_URL = YAML_CONFIG.get("base_url", "https://kiutz.pp.ua")
 
 POSTS_DIR.mkdir(exist_ok=True)
 STATIC_DIR.mkdir(exist_ok=True)

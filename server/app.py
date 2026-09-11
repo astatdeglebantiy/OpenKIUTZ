@@ -2,7 +2,7 @@ from http.server import ThreadingHTTPServer
 import config
 from server.handler import SiteRequestHandler
 
-
+# TODO: supporting.md
 def run():
     server = ThreadingHTTPServer((config.SERVER_HOST, config.SERVER_PORT), SiteRequestHandler)
     server.daemon_threads = True

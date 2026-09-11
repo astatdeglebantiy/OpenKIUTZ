@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 
 import config
 from core.parser import MarkdownParser
+from core.sitemap import generate_sitemap_xml
 from core.template import default_template_engine
 
 markdown_parser = MarkdownParser()
@@ -154,6 +155,15 @@ class SiteRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
             self.wfile.write(data)
+            return
+
+        if self.path == "/sitemap.xml":
+            sitemap_content = generate_sitemap_xml(base_url=config.BASE_URL)
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(sitemap_content.encode("utf-8"))
             return
 
         if path == "":
